@@ -48,8 +48,8 @@ export async function run(): Promise<void> {
       stackDefinitionFile: stackDefinitionFile ?? undefined,
       templateVariables: templateVariables ? JSON.parse(templateVariables) : undefined,
       image,
-      pruneStack: pruneStack || false,
-      pullImage: pullImage || false
+      pruneStack: pruneStack ?? undefined,
+      pullImage: pullImage ?? undefined
     })
     core.info('✅ Deployment done')
   } catch (error) {
