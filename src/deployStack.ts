@@ -16,6 +16,7 @@ type DeployStack = {
   image?: string
   pruneStack?: boolean
   pullImage?: boolean
+  rejectUnauthorized?: boolean
 }
 
 enum StackType {
@@ -55,7 +56,7 @@ function generateNewStackDefinition(
   return stackDefinition.replace(new RegExp(`${imageWithoutTag}(:.*)?\n`), `${image}\n`)
 }
 
-export async function deployStack({
+async function deployStack({
   portainerHost,
   username,
   password,
@@ -65,10 +66,11 @@ export async function deployStack({
   stackDefinitionFile,
   templateVariables,
   image,
+  pullImage,
   pruneStack,
-  pullImage
+  rejectUnauthorized
 }: DeployStack): Promise<void> {
-  const portainerApi = new PortainerApi(portainerHost)
+  const portainerApi = new PortainerApi(portainerHost, rejectUnauthorized)
 
   const stackDefinitionToDeploy = generateNewStackDefinition(
     stackDefinitionFile,
@@ -134,3 +136,5 @@ export async function deployStack({
     await portainerApi.logout()
   }
 }
+
+export { deployStack, DeployStack }

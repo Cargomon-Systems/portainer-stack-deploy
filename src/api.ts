@@ -1,4 +1,5 @@
 import axios from 'axios'
+import https from 'https'
 
 type EnvVariables = Array<{
   name: string
@@ -27,9 +28,14 @@ type UpdateStackBody = {
 export class PortainerApi {
   private axiosInstance
 
-  constructor(host: string) {
+  constructor(host: string, rejectUnauthorized = false) {
     this.axiosInstance = axios.create({
-      baseURL: `${host}/api`
+      baseURL: `${host}/api`,
+      httpsAgent: rejectUnauthorized
+        ? new https.Agent({
+            rejectUnauthorized
+          })
+        : undefined
     })
   }
 
