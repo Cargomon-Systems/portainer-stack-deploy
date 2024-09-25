@@ -38,7 +38,7 @@ function getInputs(): DeployStack {
   })
   const rejectUnauthorized: boolean = core.getBooleanInput('reject-unauthorized', {
     required: false
-  })
+  }) == true
 
   return {
     portainerHost,

@@ -28,14 +28,15 @@ type UpdateStackBody = {
 export class PortainerApi {
   private axiosInstance
 
-  constructor(host: string, rejectUnauthorized = false) {
+  constructor(host: string, rejectUnauthorized = true) {
     this.axiosInstance = axios.create({
       baseURL: `${host}/api`,
-      httpsAgent: rejectUnauthorized
-        ? new https.Agent({
-            rejectUnauthorized
-          })
-        : undefined
+      httpsAgent:
+        rejectUnauthorized === false
+          ? new https.Agent({
+              rejectUnauthorized
+            })
+          : undefined
     })
   }
 

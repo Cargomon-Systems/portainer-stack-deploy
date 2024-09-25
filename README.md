@@ -25,7 +25,7 @@ Portainer-stack-deploy is a GitHub Action for deploying a newly updated stack to
 | image               | The URI of the container image to insert into the stack definition, eg. `ghcr.io/username/repo:sha-676cae2`. Will use existing image inside stack definition if not provided |              |
 | prune-stack         | If set to `true`, the action will remove any services that are not defined in the stack definition.                                                                          | false        |
 | pull-image          | If set to `true`, the action will pull the image before deploying the stack.                                                                                                 | false        |
-| reject-unauthorized | If set to `true`, the action will skip self authorized certificates.                                                                                                         | false        |
+| reject-unauthorized | If set to `false`, the action will skip self authorized certificates.                                                                                                         | true        |
 
 ## Example
 
