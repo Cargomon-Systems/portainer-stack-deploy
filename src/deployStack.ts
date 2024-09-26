@@ -3,6 +3,7 @@ import path from 'path'
 import fs from 'fs'
 import Handlebars from 'handlebars'
 import * as core from '@actions/core'
+import { isAxiosError } from 'axios'
 
 type DeployStack = {
   portainerHost: string
@@ -34,7 +35,11 @@ function generateNewStackDefinition(
     return undefined
   }
 
-  const stackDefFilePath = path.join(process.env.GITHUB_WORKSPACE as string, stackDefinitionFile)
+  const stackDefFilePath = path.join(
+    (process.env.GITHUB_WORKSPACE as string) || '.',
+    stackDefinitionFile
+  )
+
   core.info(`Reading stack definition file from ${stackDefFilePath}`)
   let stackDefinition = fs.readFileSync(stackDefFilePath, 'utf8')
   if (!stackDefinition) {
@@ -77,7 +82,10 @@ async function deployStack({
     templateVariables,
     image
   )
-  if (stackDefinitionToDeploy) core.debug(stackDefinitionToDeploy)
+
+  if (stackDefinitionToDeploy) {
+    core.debug(stackDefinitionToDeploy)
+  }
 
   core.info('Logging in to Portainer instance...')
   await portainerApi.login({
@@ -130,10 +138,19 @@ async function deployStack({
     }
   } catch (error) {
     core.info('⛔️ Something went wrong during deployment!')
+    if (isAxiosError(error) && error.response) {
+      const {
+        status,
+        data,
+        config: { url, method }
+      } = error.response
+      return core.info(
+        `AxiosError HTTP Status ${status} (${method} ${url}): ${JSON.stringify(data, null, 2)}`
+      )
+    } else {
+      core.info(`error: ${JSON.stringify(error, null, 2)}`)
+    }
     throw error
-  } finally {
-    core.info(`Logging out from Portainer instance...`)
-    await portainerApi.logout()
   }
 }
 

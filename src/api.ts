@@ -1,5 +1,5 @@
 import axios from 'axios'
-import https from 'https'
+import * as https from 'node:https'
 
 type EnvVariables = Array<{
   name: string
