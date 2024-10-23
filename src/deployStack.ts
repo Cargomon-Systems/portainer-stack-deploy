@@ -93,64 +93,47 @@ async function deployStack({
     password
   })
 
-  try {
-    const allStacks = await portainerApi.getStacks()
-    const existingStack = allStacks.find(s => {
-      return s.Name === stackName && s.EndpointId === endpointId
-    })
+  const allStacks = await portainerApi.getStacks()
+  const existingStack = allStacks.find(s => {
+    return s.Name === stackName && s.EndpointId === endpointId
+  })
 
-    if (existingStack) {
-      core.info(`Found existing stack with name: ${stackName}`)
-      core.info('Updating existing stack...')
-      await portainerApi.updateStack(
-        existingStack.Id,
-        {
-          endpointId: existingStack.EndpointId
-        },
-        {
-          env: existingStack.Env,
-          stackFileContent: stackDefinitionToDeploy,
-          prune: pruneStack ?? false,
-          pullImage: pullImage ?? false
-        }
-      )
-      core.info('Successfully updated existing stack')
-    } else {
-      if (!stackDefinitionToDeploy) {
-        throw new Error(
-          `Stack with name ${stackName} does not exist and no stack definition file was provided.`
-        )
+  if (existingStack) {
+    core.info(`Found existing stack with name: ${stackName}`)
+    core.info('Updating existing stack...')
+    await portainerApi.updateStack(
+      existingStack.Id,
+      {
+        endpointId: existingStack.EndpointId
+      },
+      {
+        env: existingStack.Env,
+        stackFileContent: stackDefinitionToDeploy,
+        prune: pruneStack ?? false,
+        pullImage: pullImage ?? false
       }
-      core.info('Deploying new stack...')
-      await portainerApi.createStack(
-        {
-          type: swarmId ? StackType.SWARM : StackType.COMPOSE,
-          method: 'string',
-          endpointId
-        },
-        {
-          name: stackName,
-          stackFileContent: stackDefinitionToDeploy,
-          swarmID: swarmId ? swarmId : undefined
-        }
+    )
+    core.info('Successfully updated existing stack')
+  } else {
+    if (!stackDefinitionToDeploy) {
+      throw new Error(
+        `Stack with name ${stackName} does not exist and no stack definition file was provided.`
       )
-      core.info(`Successfully created new stack with name: ${stackName}`)
     }
-  } catch (error) {
-    core.info('⛔️ Something went wrong during deployment!')
-    if (isAxiosError(error) && error.response) {
-      const {
-        status,
-        data,
-        config: { url, method }
-      } = error.response
-      return core.info(
-        `AxiosError HTTP Status ${status} (${method} ${url}): ${JSON.stringify(data, null, 2)}`
-      )
-    } else {
-      core.info(`error: ${JSON.stringify(error, null, 2)}`)
-    }
-    throw error
+    core.info('Deploying new stack...')
+    await portainerApi.createStack(
+      {
+        type: swarmId ? StackType.SWARM : StackType.COMPOSE,
+        method: 'string',
+        endpointId
+      },
+      {
+        name: stackName,
+        stackFileContent: stackDefinitionToDeploy,
+        swarmID: swarmId ? swarmId : undefined
+      }
+    )
+    core.info(`Successfully created new stack with name: ${stackName}`)
   }
 }
 

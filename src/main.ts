@@ -36,9 +36,10 @@ function getInputs(): DeployStack {
   const pullImage: boolean = core.getBooleanInput('pull-image', {
     required: false
   })
-  const rejectUnauthorized: boolean = core.getBooleanInput('reject-unauthorized', {
-    required: false
-  }) == true
+  const rejectUnauthorized: boolean =
+    core.getBooleanInput('reject-unauthorized', {
+      required: false
+    }) == true
 
   return {
     portainerHost,
@@ -63,6 +64,7 @@ export async function run(): Promise<void> {
     await deployStack(userInputs)
     core.info('✅ Deployment done')
   } catch (error) {
+    core.info('⛔️ Something went wrong during deployment!')
     if (axios.isAxiosError(error) && error.response) {
       const {
         status,
@@ -72,6 +74,8 @@ export async function run(): Promise<void> {
       return core.setFailed(
         `AxiosError HTTP Status ${status} (${method} ${url}): ${JSON.stringify(data, null, 2)}`
       )
+    } else {
+      core.info(`error: ${JSON.stringify(error, null, 2)}`)
     }
     return core.setFailed(error as Error)
   }
