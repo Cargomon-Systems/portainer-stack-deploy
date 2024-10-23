@@ -112,7 +112,6 @@ const path_1 = __importDefault(__nccwpck_require__(1017));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const handlebars_1 = __importDefault(__nccwpck_require__(7492));
 const core = __importStar(__nccwpck_require__(2186));
-const axios_1 = __nccwpck_require__(8757);
 var StackType;
 (function (StackType) {
     StackType[StackType["SWARM"] = 1] = "SWARM";
@@ -152,51 +151,38 @@ async function deployStack({ portainerHost, username, password, swarmId, endpoin
         username,
         password
     });
-    try {
-        const allStacks = await portainerApi.getStacks();
-        const existingStack = allStacks.find(s => {
-            return s.Name === stackName && s.EndpointId === endpointId;
+    const allStacks = await portainerApi.getStacks();
+    const existingStack = allStacks.find(s => {
+        return s.Name === stackName && s.EndpointId === endpointId;
+    });
+    if (existingStack) {
+        core.info(`Found existing stack with name: ${stackName}`);
+        core.info('Updating existing stack...');
+        await portainerApi.updateStack(existingStack.Id, {
+            endpointId: existingStack.EndpointId
+        }, {
+            env: existingStack.Env,
+            stackFileContent: stackDefinitionToDeploy,
+            prune: pruneStack !== null && pruneStack !== void 0 ? pruneStack : false,
+            pullImage: pullImage !== null && pullImage !== void 0 ? pullImage : false
         });
-        if (existingStack) {
-            core.info(`Found existing stack with name: ${stackName}`);
-            core.info('Updating existing stack...');
-            await portainerApi.updateStack(existingStack.Id, {
-                endpointId: existingStack.EndpointId
-            }, {
-                env: existingStack.Env,
-                stackFileContent: stackDefinitionToDeploy,
-                prune: pruneStack !== null && pruneStack !== void 0 ? pruneStack : false,
-                pullImage: pullImage !== null && pullImage !== void 0 ? pullImage : false
-            });
-            core.info('Successfully updated existing stack');
-        }
-        else {
-            if (!stackDefinitionToDeploy) {
-                throw new Error(`Stack with name ${stackName} does not exist and no stack definition file was provided.`);
-            }
-            core.info('Deploying new stack...');
-            await portainerApi.createStack({
-                type: swarmId ? StackType.SWARM : StackType.COMPOSE,
-                method: 'string',
-                endpointId
-            }, {
-                name: stackName,
-                stackFileContent: stackDefinitionToDeploy,
-                swarmID: swarmId ? swarmId : undefined
-            });
-            core.info(`Successfully created new stack with name: ${stackName}`);
-        }
+        core.info('Successfully updated existing stack');
     }
-    catch (error) {
-        core.info('⛔️ Something went wrong during deployment!');
-        if ((0, axios_1.isAxiosError)(error) && error.response) {
-            const { status, data, config: { url, method } } = error.response;
-            return core.info(`AxiosError HTTP Status ${status} (${method} ${url}): ${JSON.stringify(data, null, 2)}`);
+    else {
+        if (!stackDefinitionToDeploy) {
+            throw new Error(`Stack with name ${stackName} does not exist and no stack definition file was provided.`);
         }
-        else {
-            core.info(`error: ${JSON.stringify(error, null, 2)}`);
-        }
-        throw error;
+        core.info('Deploying new stack...');
+        await portainerApi.createStack({
+            type: swarmId ? StackType.SWARM : StackType.COMPOSE,
+            method: 'string',
+            endpointId
+        }, {
+            name: stackName,
+            stackFileContent: stackDefinitionToDeploy,
+            swarmID: swarmId ? swarmId : undefined
+        });
+        core.info(`Successfully created new stack with name: ${stackName}`);
     }
 }
 exports.deployStack = deployStack;
@@ -300,9 +286,13 @@ async function run() {
         core.info('✅ Deployment done');
     }
     catch (error) {
+        core.info('⛔️ Something went wrong during deployment!');
         if (axios_1.default.isAxiosError(error) && error.response) {
             const { status, data, config: { url, method } } = error.response;
             return core.setFailed(`AxiosError HTTP Status ${status} (${method} ${url}): ${JSON.stringify(data, null, 2)}`);
+        }
+        else {
+            core.info(`error: ${JSON.stringify(error, null, 2)}`);
         }
         return core.setFailed(error);
     }
