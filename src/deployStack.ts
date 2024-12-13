@@ -3,7 +3,7 @@ import path from 'path'
 import fs from 'fs'
 import Handlebars from 'handlebars'
 import * as core from '@actions/core'
-import { isAxiosError } from 'axios'
+// import { isAxiosError } from 'axios'
 
 type DeployStack = {
   portainerHost: string

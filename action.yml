@@ -39,6 +39,10 @@ inputs:
   pull-image:
     required: false
     description: "If true, the image will be pulled before deployment"
+  reject-unauthorized:
+    required: false
+    description: "If false, the action will skip self authorized certificates."
+
 
 runs:
   using: "node20"
