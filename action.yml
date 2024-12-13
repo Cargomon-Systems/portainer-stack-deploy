@@ -22,7 +22,7 @@ inputs:
     required: false
     description: "ID of the Portainer node to deploy to"
   stack-name:
-    required: true
+    required: false
     description: "Name for the Portainer stack"
   stack-definition:
     required: false
@@ -30,6 +30,9 @@ inputs:
   template-variables:
     required: false
     description: "If given, these variables will be replaced in docker-compose file by handlebars"
+  stacks-file:
+    required: false
+    description: "If given, this action will deploy multiple stacks at once. the stack-name and stack-definition and template-variables will be ignored"
   image:
     required: false
     description: "The URI of the container image to insert into the stack definition, eg. docker.pkg.github.com/username/repo/master"

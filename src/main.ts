@@ -40,6 +40,9 @@ function getInputs(): DeployStack {
     core.getBooleanInput('reject-unauthorized', {
       required: false
     }) == true
+  const stacksFile: string = core.getInput('stacks-file', {
+    required: false
+  })
 
   return {
     portainerHost,
@@ -50,6 +53,7 @@ function getInputs(): DeployStack {
     stackName,
     stackDefinitionFile: stackDefinitionFile ?? undefined,
     templateVariables: templateVariables ? JSON.parse(templateVariables) : undefined,
+    stacksFile,
     image,
     pruneStack,
     pullImage,
