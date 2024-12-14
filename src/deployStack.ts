@@ -4,7 +4,6 @@ import fs from 'fs'
 import Handlebars from 'handlebars'
 import * as core from '@actions/core'
 import * as yaml from 'js-yaml'
-// import { isAxiosError } from 'axios'
 
 type DeployStack = {
   portainerHost: string

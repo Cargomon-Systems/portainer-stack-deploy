@@ -26,6 +26,8 @@ Portainer-stack-deploy is a GitHub Action for deploying a newly updated stack to
 | prune-stack         | If set to `true`, the action will remove any services that are not defined in the stack definition.                                                                          | false        |
 | pull-image          | If set to `true`, the action will pull the image before deploying the stack.                                                                                                 | false        |
 | reject-unauthorized | If set to `false`, the action will skip self authorized certificates.                                                                                                         | true        |
+| stacks-file | If given, this action will deploy multiple stacks at once. the stack-name and stack-definition and template-variables will be ignored                                                                                                         | "" |
+
 
 ## Example
 
@@ -101,6 +103,20 @@ services:
     deploy:
       update_config:
         order: start-first
+```
+
+
+## Multiple stacks deployment
+```yaml
+registry: registry.cargomon.at
+
+deploy:
+  - stack: server-api
+    path: ./server/compose.yaml
+    version: latest
+    image: server-api
+    template:
+      app-settings: server-api-appsettings
 ```
 
 ## Development
