@@ -107,9 +107,9 @@ services:
 
 
 ## Multiple stacks deployment
+Note that image is only part of the full image URI, you should not provide the repository in the name. 
+The repository is a required parameter in the action file
 ```yaml
-registry: registry.cargomon.at
-
 deploy:
   - stack: server-api
     path: ./server/compose.yaml

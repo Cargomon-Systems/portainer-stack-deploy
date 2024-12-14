@@ -43,6 +43,9 @@ function getInputs(): DeployStack {
   const stacksFile: string = core.getInput('stacks-file', {
     required: false
   })
+  const stacksFileRegistry: string = core.getInput('stacks-file-registry', {
+    required: false
+  })
 
   return {
     portainerHost,
@@ -54,6 +57,7 @@ function getInputs(): DeployStack {
     stackDefinitionFile: stackDefinitionFile ?? undefined,
     templateVariables: templateVariables ? JSON.parse(templateVariables) : undefined,
     stacksFile,
+    stacksFileRegistry,
     image,
     pruneStack,
     pullImage,

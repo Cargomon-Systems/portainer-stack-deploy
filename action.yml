@@ -33,6 +33,9 @@ inputs:
   stacks-file:
     required: false
     description: "If given, this action will deploy multiple stacks at once. the stack-name and stack-definition and template-variables will be ignored"
+  stacks-file-registry:
+    required: false
+    description: "Required in case of stacks-file. The docker repository containing the images"
   image:
     required: false
     description: "The URI of the container image to insert into the stack definition, eg. docker.pkg.github.com/username/repo/master"

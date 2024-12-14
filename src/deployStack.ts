@@ -15,6 +15,7 @@ type DeployStack = {
   stackDefinitionFile?: string
   templateVariables?: object
   stacksFile?: string
+  stacksFileRegistry?: string
   image?: string
   pruneStack?: boolean
   pullImage?: boolean
@@ -72,7 +73,10 @@ type CtrfReport = {
   }
 }
 
-function readStacksFile(stacksFilePath: string): StacksFileDeployableItem[] {
+function readStacksFile(
+  stacksFilePath: string,
+  stacksFileRegistry?: string
+): StacksFileDeployableItem[] {
   // Read the YAML file and parse it
   function parseYamlFile(filePath: string): StacksFile {
     const fileContents = fs.readFileSync(filePath, 'utf8')
@@ -83,7 +87,8 @@ function readStacksFile(stacksFilePath: string): StacksFileDeployableItem[] {
   function processYaml(config: StacksFile): StacksFileDeployableItem[] {
     return config.deploy.map(item => {
       const imageName = item.image || item.stack
-      const dockerImage = `${config.registry}/${imageName}:${item.version || 'latest'}`
+      const registry = stacksFileRegistry || config.registry
+      const dockerImage = `${registry}/${imageName}:${item.version || 'latest'}`
 
       return {
         stack: item.stack,
@@ -145,6 +150,7 @@ async function deployStack({
   stackDefinitionFile,
   templateVariables,
   stacksFile,
+  stacksFileRegistry,
   image,
   pullImage,
   pruneStack,
@@ -221,7 +227,7 @@ async function deployStack({
 
   const stacksResults: CtrfSingleTestReport[] = []
   if (stacksFile != null && stacksFile.length > 0) {
-    const stacks = readStacksFile(stacksFile)
+    const stacks = readStacksFile(stacksFile, stacksFileRegistry)
     for (const stack of stacks) {
       const singleStackResult: CtrfSingleTestReport = {
         name: stack.stack,
