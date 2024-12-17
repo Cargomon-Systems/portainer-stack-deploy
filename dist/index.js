@@ -118,7 +118,7 @@ var StackType;
     StackType[StackType["SWARM"] = 1] = "SWARM";
     StackType[StackType["COMPOSE"] = 2] = "COMPOSE";
 })(StackType || (StackType = {}));
-function readStacksFile(stacksFilePath) {
+function readStacksFile(stacksFilePath, stacksFileRegistry) {
     // Read the YAML file and parse it
     function parseYamlFile(filePath) {
         const fileContents = fs_1.default.readFileSync(filePath, 'utf8');
@@ -128,7 +128,8 @@ function readStacksFile(stacksFilePath) {
     function processYaml(config) {
         return config.deploy.map(item => {
             const imageName = item.image || item.stack;
-            const dockerImage = `${config.registry}/${imageName}:${item.version || 'latest'}`;
+            const registry = stacksFileRegistry || config.registry;
+            const dockerImage = `${registry}/${imageName}:${item.version || 'latest'}`;
             return {
                 stack: item.stack,
                 path: item.path,
@@ -164,7 +165,7 @@ function generateNewStackDefinition(stackDefinitionFile, templateVariables, imag
     core.info(`Inserting image ${image} into the stack definition`);
     return stackDefinition.replace(new RegExp(`${imageWithoutTag}(:.*)?\n`), `${image}\n`);
 }
-async function deployStack({ portainerHost, username, password, swarmId, endpointId, stackName, stackDefinitionFile, templateVariables, stacksFile, image, pullImage, pruneStack, rejectUnauthorized }) {
+async function deployStack({ portainerHost, username, password, swarmId, endpointId, stackName, stackDefinitionFile, templateVariables, stacksFile, stacksFileRegistry, image, pullImage, pruneStack, rejectUnauthorized }) {
     const startTime = new Date();
     const portainerApi = new api_1.PortainerApi(portainerHost, rejectUnauthorized);
     core.info('Logging in to Portainer instance...');
@@ -213,7 +214,7 @@ async function deployStack({ portainerHost, username, password, swarmId, endpoin
     };
     const stacksResults = [];
     if (stacksFile != null && stacksFile.length > 0) {
-        const stacks = readStacksFile(stacksFile);
+        const stacks = readStacksFile(stacksFile, stacksFileRegistry);
         for (const stack of stacks) {
             const singleStackResult = {
                 name: stack.stack,
@@ -334,7 +335,7 @@ function getInputs() {
         required: false
     });
     const stackName = core.getInput('stack-name', {
-        required: true
+        required: false
     });
     const stackDefinitionFile = core.getInput('stack-definition', {
         required: false
@@ -357,6 +358,9 @@ function getInputs() {
     const stacksFile = core.getInput('stacks-file', {
         required: false
     });
+    const stacksFileRegistry = core.getInput('stacks-file-registry', {
+        required: false
+    });
     return {
         portainerHost,
         username,
@@ -367,6 +371,7 @@ function getInputs() {
         stackDefinitionFile: stackDefinitionFile !== null && stackDefinitionFile !== void 0 ? stackDefinitionFile : undefined,
         templateVariables: templateVariables ? JSON.parse(templateVariables) : undefined,
         stacksFile,
+        stacksFileRegistry,
         image,
         pruneStack,
         pullImage,
