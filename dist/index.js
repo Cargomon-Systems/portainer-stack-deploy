@@ -227,11 +227,13 @@ async function deployStack({ portainerHost, username, password, swarmId, endpoin
                 await deploySingleStack(stack.stack, stack.path, stack.template, stack.image || '');
             }
             catch (err) {
+                console.log(`error deploying stack: ${stackName}, err: ${err}`);
                 singleStackResult.status = 'failed';
                 singleStackResult.message = JSON.stringify(err);
             }
             const stackEndTime = new Date();
             singleStackResult.duration = stackEndTime.getTime() - stackStartTime.getTime();
+            stacksResults.push(singleStackResult);
         }
     }
     else if (stackName && stackDefinitionFile && templateVariables && image) {
@@ -246,11 +248,13 @@ async function deployStack({ portainerHost, username, password, swarmId, endpoin
             await deploySingleStack(stackName, stackDefinitionFile, templateVariables, image);
         }
         catch (err) {
+            console.log(`error deploying stack: ${stackName}, err: ${err}`);
             singleStackResult.status = 'failed';
             singleStackResult.message = JSON.stringify(err);
         }
         const stackEndTime = new Date();
         singleStackResult.duration = stackEndTime.getTime() - stackStartTime.getTime();
+        stacksResults.push(singleStackResult);
     }
     const endTime = new Date();
     const report = {
