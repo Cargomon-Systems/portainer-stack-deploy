@@ -99,6 +99,7 @@ __tests__/runner/*
 lib/**/*
 
 src/local.ts
+stacks.yaml
 stack.yaml
-stack.yml
+
 portainer-deploy-stacks-report.json

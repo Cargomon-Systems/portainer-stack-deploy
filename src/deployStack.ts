@@ -239,11 +239,13 @@ async function deployStack({
       try {
         await deploySingleStack(stack.stack, stack.path, stack.template, stack.image || '')
       } catch (err) {
+        console.log(`error deploying stack: ${stackName}, err: ${err}`)
         singleStackResult.status = 'failed'
         singleStackResult.message = JSON.stringify(err)
       }
       const stackEndTime = new Date()
       singleStackResult.duration = stackEndTime.getTime() - stackStartTime.getTime()
+      stacksResults.push(singleStackResult)
     }
   } else if (stackName && stackDefinitionFile && templateVariables && image) {
     const singleStackResult: CtrfSingleTestReport = {
@@ -256,11 +258,13 @@ async function deployStack({
     try {
       await deploySingleStack(stackName, stackDefinitionFile, templateVariables, image)
     } catch (err) {
+      console.log(`error deploying stack: ${stackName}, err: ${err}`)
       singleStackResult.status = 'failed'
       singleStackResult.message = JSON.stringify(err)
     }
     const stackEndTime = new Date()
     singleStackResult.duration = stackEndTime.getTime() - stackStartTime.getTime()
+    stacksResults.push(singleStackResult)
   }
 
   const endTime = new Date()
