@@ -19,7 +19,7 @@ function getInputs(): DeployStack {
     required: false
   })
   const stackName: string = core.getInput('stack-name', {
-    required: true
+    required: false
   })
   const stackDefinitionFile: string = core.getInput('stack-definition', {
     required: false
