@@ -135,9 +135,13 @@ function generateNewStackDefinition(
     return stackDefinition
   }
 
-  const imageWithoutTag = image.substring(0, image.indexOf(':'))
+  const loadedStackDefinition = yaml.load(stackDefinition) as {
+    services: Record<string, { image: string }>
+  }
+
   core.info(`Inserting image ${image} into the stack definition`)
-  return stackDefinition.replace(new RegExp(`${imageWithoutTag}(:.*)?\n`), `${image}\n`)
+  loadedStackDefinition.services[Object.keys(loadedStackDefinition.services)[0]].image = image
+  return yaml.dump(loadedStackDefinition)
 }
 
 async function deployStack({
