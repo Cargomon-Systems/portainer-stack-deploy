@@ -161,9 +161,10 @@ function generateNewStackDefinition(stackDefinitionFile, templateVariables, imag
         core.info(`No new image provided. Will use image in stack definition.`);
         return stackDefinition;
     }
-    const imageWithoutTag = image.substring(0, image.indexOf(':'));
+    const loadedStackDefinition = yaml.load(stackDefinition);
     core.info(`Inserting image ${image} into the stack definition`);
-    return stackDefinition.replace(new RegExp(`${imageWithoutTag}(:.*)?\n`), `${image}\n`);
+    loadedStackDefinition.services[Object.keys(loadedStackDefinition.services)[0]].image = image;
+    return yaml.dump(loadedStackDefinition);
 }
 async function deployStack({ portainerHost, username, password, swarmId, endpointId, stackName, stackDefinitionFile, templateVariables, stacksFile, stacksFileRegistry, image, pullImage, pruneStack, rejectUnauthorized }) {
     const startTime = new Date();
