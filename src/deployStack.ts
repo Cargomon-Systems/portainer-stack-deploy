@@ -22,10 +22,12 @@ type DeployStack = {
   rejectUnauthorized?: boolean
 }
 
+/*
 enum StackType {
   SWARM = 1,
   COMPOSE = 2
 }
+*/
 
 type StacksFileDeployItem = {
   stack: string
@@ -215,8 +217,8 @@ async function deployStack({
       core.info('Deploying new stack...')
       await portainerApi.createStack(
         {
-          type: swarmId ? StackType.SWARM : StackType.COMPOSE,
-          method: 'string',
+          //type: swarmId ? StackType.SWARM : StackType.COMPOSE,
+          //method: 'string',
           endpointId
         },
         {

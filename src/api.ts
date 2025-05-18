@@ -15,7 +15,8 @@ type StackData = {
   Env: EnvVariables
 }
 
-type CreateStackParams = { type: number; method: string; endpointId: EndpointId }
+type CreateStackParams = { endpointId: EndpointId }
+//type CreateStackParams = { type: number; method: string; endpointId: EndpointId }
 type CreateStackBody = { name: string; stackFileContent: string; swarmID?: string }
 type UpdateStackParams = { endpointId: EndpointId }
 type UpdateStackBody = {
@@ -59,6 +60,7 @@ export class PortainerApi {
   }
 
   async createStack(params: CreateStackParams, body: CreateStackBody): Promise<void> {
+    // const p={ endpointId: params.endpointId }
     await this.axiosInstance.post('/stacks/create/swarm/string', body, { params })
     //Todo: create path dynamically based on type and method in params
   }

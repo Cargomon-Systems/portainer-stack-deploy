@@ -63,6 +63,7 @@ class PortainerApi {
         return data;
     }
     async createStack(params, body) {
+        // const p={ endpointId: params.endpointId }
         await this.axiosInstance.post('/stacks/create/swarm/string', body, { params });
         //Todo: create path dynamically based on type and method in params
     }
@@ -114,11 +115,6 @@ const fs_1 = __importDefault(__nccwpck_require__(7147));
 const handlebars_1 = __importDefault(__nccwpck_require__(7492));
 const core = __importStar(__nccwpck_require__(2186));
 const yaml = __importStar(__nccwpck_require__(1917));
-var StackType;
-(function (StackType) {
-    StackType[StackType["SWARM"] = 1] = "SWARM";
-    StackType[StackType["COMPOSE"] = 2] = "COMPOSE";
-})(StackType || (StackType = {}));
 function readStacksFile(stacksFilePath, stacksFileRegistry) {
     // Read the YAML file and parse it
     function parseYamlFile(filePath) {
@@ -203,8 +199,8 @@ async function deployStack({ portainerHost, username, password, swarmId, endpoin
             }
             core.info('Deploying new stack...');
             await portainerApi.createStack({
-                type: swarmId ? StackType.SWARM : StackType.COMPOSE,
-                method: 'string',
+                //type: swarmId ? StackType.SWARM : StackType.COMPOSE,
+                //method: 'string',
                 endpointId
             }, {
                 name: currentStackName,
