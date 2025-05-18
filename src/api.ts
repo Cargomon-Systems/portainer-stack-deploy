@@ -60,6 +60,7 @@ export class PortainerApi {
 
   async createStack(params: CreateStackParams, body: CreateStackBody): Promise<void> {
     await this.axiosInstance.post('/stacks/create/swarm/string', body, { params })
+    //Todo: create path dynamically based on type and method in params
   }
 
   async updateStack(id: number, params: UpdateStackParams, body: UpdateStackBody): Promise<void> {
